@@ -268,6 +268,9 @@ pub struct AuthorizeCardParams {
     pub reference: Option<String>,
     pub description: Option<String>,
     pub max_fee_minor: Option<i64>,
+    /// `None` or `Some(true)` (the default) captures an approved payment in full in the
+    /// same call; `Some(false)` only reserves the money for a later capture or release.
+    pub capture: Option<bool>,
 }
 
 /// A decline is a result, not an error: see [`CardAuthorization::declined`].
@@ -278,7 +281,12 @@ pub struct AuthorizeCardResult {
     #[serde(deserialize_with = "nullable")]
     pub fees: Vec<FeeCharge>,
     pub fees_total_minor: i64,
+    /// The cardholder's account after the call.
     pub balance: Balance,
+    /// The `card_payment`, when the payment was captured (approved, without `capture: Some(false)`).
+    pub transaction: Option<Transaction>,
+    pub merchant_balance: Option<Balance>,
+    pub total_debit_minor: Option<i64>,
 }
 
 #[skip_serializing_none]
@@ -525,7 +533,9 @@ resource!(
 );
 
 impl CardAuthorizations {
-    /// Authorises a payment at a merchant. A decline is not an error: check
+    /// Pays a merchant by card. An approved payment is captured at once, or
+    /// with `capture: Some(false)` only reserved for a later `capture` or
+    /// `release`. A decline is not an error: check
     /// `result.authorization.declined()`. Needs `cards:charge`.
     pub async fn authorize(&self, p: &AuthorizeCardParams) -> Result<AuthorizeCardResult> {
         check_amount(p.amount_minor, true)?;

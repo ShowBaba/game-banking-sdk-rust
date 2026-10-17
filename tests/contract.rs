@@ -850,6 +850,7 @@ async fn contract() {
             cvv: s(&issued.cvv),
             merchant_account_number: s(&till.account_number),
             amount_minor: 200_00,
+            capture: Some(false),
             ..Default::default()
         })
         .await
@@ -898,10 +899,27 @@ async fn contract() {
         ),
         ("card_refund", 50_00)
     );
+    let instant = gb
+        .card_authorizations()
+        .authorize(&AuthorizeCardParams {
+            card_id: s(&issued.card.id),
+            merchant_account_id: s(&till.id),
+            amount_minor: 20_00,
+            ..Default::default()
+        })
+        .await
+        .unwrap();
+    assert_eq!(instant.authorization.status, "captured");
+    assert_eq!(instant.transaction.as_ref().unwrap().r#type, "card_payment");
+    assert_eq!(
+        instant.merchant_balance.as_ref().unwrap().posted_balance,
+        120_00
+    );
     let by_id = AuthorizeCardParams {
         card_id: s(&issued.card.id),
         merchant_account_id: s(&till.id),
         amount_minor: 10_00,
+        capture: Some(false),
         ..Default::default()
     };
     let pending = gb.card_authorizations().authorize(&by_id).await.unwrap();
@@ -944,7 +962,7 @@ async fn contract() {
         })
         .await
         .unwrap();
-    assert_eq!(auths.len(), 3);
+    assert_eq!(auths.len(), 4);
 
     gb.clock()
         .configure(&ConfigureClockParams {

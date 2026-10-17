@@ -95,7 +95,7 @@ The runtime client has these resources:
 - `merchants`: `create` (idempotent on `external_merchant_id`; returns the existing merchant on a repeat), `list`, `get` and `update`. Merchant accounts are opened with `accounts.open` and a `merchant_id`.
 - `cardPrograms` (under a bank): `list`, `get`, `create` and `update`.
 - `cards`: `issue` (an idempotent money call, because it may charge a fee; the result carries `card_number` and `cvv` once), `list`, `get`, `update`, `block`, `unblock`, `reportLost` (`lost` or `stolen`) and `close`.
-- `cardAuthorizations`: `authorize`, `list`, `get`, `capture`, `release` and `refund`. Authorize, capture, release and refund are idempotent money calls and carry an idempotency key.
+- `cardAuthorizations`: `authorize`, `list`, `get`, `capture`, `release` and `refund`. Authorize, capture, release and refund are idempotent money calls and carry an idempotency key. `authorize` captures an approved payment in the same call by default, and its result then also carries `transaction`, `merchant_balance` and `total_debit_minor`; `capture: false` only reserves the money for a later `capture` or `release`.
 
 A declined authorisation is a successful response with `authorization.status == "declined"` and a `decline_code`, not an exception. SDKs export the decline codes as constants.
 

@@ -108,17 +108,21 @@ gb.card_programs().create(&bank_id, &CardProgramParams { name: Some("Classic".in
 // Issue a card: card_number and cvv are shown only now.
 let issued = gb.cards().issue(&IssueCardParams { account_id: account.id.clone(), ..Default::default() }).await?;
 
-// Pay: a decline is a result, not an error.
-let res = gb.card_authorizations().authorize(&AuthorizeCardParams {
+// Pay: an approved payment is charged at once (status "captured"). A decline is a result, not an error.
+let paid = gb.card_authorizations().authorize(&AuthorizeCardParams {
     card_id: Some(issued.card.id.clone()), merchant_account_id: Some(till.id.clone()), amount_minor: 2_500_00, ..Default::default()
 }).await?;
-match res.authorization.declined() {
-    Some(code) => show_player(code), // e.g. decline_code::INSUFFICIENT_FUNDS
-    None => {
-        // or release; refund later, in parts
-        gb.card_authorizations().capture(&res.authorization.id, &CaptureCardParams::default()).await?;
-    }
+if let Some(code) = paid.authorization.declined() {
+    show_player(code); // e.g. decline_code::INSUFFICIENT_FUNDS
 }
+
+// Or hold first when the final amount or the sale isn't settled yet (a fuel pump, a pre-order).
+let held = gb.card_authorizations().authorize(&AuthorizeCardParams {
+    card_id: Some(issued.card.id.clone()), merchant_account_id: Some(till.id.clone()), amount_minor: 2_500_00,
+    capture: Some(false), ..Default::default()
+}).await?;
+// or release; refund later, in parts
+gb.card_authorizations().capture(&held.authorization.id, &CaptureCardParams { amount_minor: Some(2_100_00), ..Default::default() }).await?;
 
 gb.cards().report_lost(&issued.card.id, "stolen").await?; // final; no replacement is issued
 ```
