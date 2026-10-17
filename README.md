@@ -1,15 +1,26 @@
 # gamebanking (Rust)
 
+[![crates.io](https://img.shields.io/crates/v/gamebanking.svg)](https://crates.io/crates/gamebanking)
+[![docs.rs](https://docs.rs/gamebanking/badge.svg)](https://docs.rs/gamebanking)
+
 Server-side SDK for the Game Banking Engine. Async (tokio + reqwest), Rust 1.88+.
 
 > Game API keys move money. Use this SDK on your game servers only.
 
 ## Install
 
+From [crates.io](https://crates.io/crates/gamebanking):
+
 ```toml
 [dependencies]
-gamebanking = { git = "https://github.com/ShowBaba/game-banking-sdk-rust" }
+gamebanking = "0.5"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+```
+
+Or from Git:
+
+```toml
+gamebanking = { git = "https://github.com/ShowBaba/game-banking-sdk-rust" }
 ```
 
 TLS uses rustls by default; use `default-features = false, features = ["native-tls"]` for the platform's TLS.
