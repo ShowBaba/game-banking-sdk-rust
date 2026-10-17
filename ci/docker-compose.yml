@@ -1,0 +1,37 @@
+# A throwaway Game Banking Engine for contract tests: PostgreSQL plus the
+# engine's published image on http://localhost:${GBE_ENGINE_PORT:-8080}.
+#   docker compose -f ci/docker-compose.yml up -d
+#   ./ci/wait-for-engine.sh
+# Override the image with GBE_ENGINE_IMAGE (e.g. a locally built tag).
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: gbe
+      POSTGRES_PASSWORD: gbe
+      POSTGRES_DB: gbe
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gbe -d gbe"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  engine:
+    image: ${GBE_ENGINE_IMAGE:-ghcr.io/showbaba/game-banking-engine:latest}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      GBE_HTTP_ADDR: ":8080"
+      GBE_DATABASE_URL: "postgres://gbe:gbe@postgres:5432/gbe?sslmode=disable"
+      GBE_ADMIN_TOKEN: "ci-admin-token"
+      GBE_JWT_SECRET: "ci-jwt-secret-not-for-production-0123456789"
+      GBE_REGISTRATION_ENABLED: "true"
+      GBE_AUTH_RATE_LIMIT_RPS: "0"
+      GBE_SCHEDULER_INTERVAL: "1s"
+      # The contract tests run a webhook receiver on the host and register http://host.docker.internal:PORT.
+      GBE_WEBHOOK_ALLOW_PRIVATE: "true"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${GBE_ENGINE_PORT:-8080}:8080"
