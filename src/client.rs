@@ -137,7 +137,7 @@ impl<T> fmt::Debug for Pager<T> {
 /// ```no_run
 /// # async fn run() -> gamebanking::Result<()> {
 /// use gamebanking::{GameBank, TransferParams};
-/// let gb = GameBank::builder().api_key("gbe_test_sk_…").base_url("https://engine.example.com").build()?;
+/// let gb = GameBank::builder().api_key("gbe_test_sk_…").base_url("https://api.gamebank.dev").build()?;
 /// let sent = gb
 ///     .transfers()
 ///     .create(&TransferParams {

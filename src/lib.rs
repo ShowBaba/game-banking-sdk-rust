@@ -20,7 +20,7 @@
 //! # async fn run(bank_id: String) -> gamebanking::Result<()> {
 //! let gb = GameBank::builder()
 //!     .api_key(std::env::var("GBE_API_KEY").unwrap())
-//!     .base_url("https://your-engine.example.com")
+//!     .base_url("https://api.gamebank.dev")
 //!     .build()?;
 //!
 //! let player = gb

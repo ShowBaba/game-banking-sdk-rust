@@ -6,6 +6,8 @@
 Server-side SDK for the Game Banking Engine. Async (tokio + reqwest), Rust 1.88+.
 
 > Game API keys move money. Use this SDK on your game servers only.
+>
+> In-game money only: the Game Banking Engine simulates banking for game currencies. It holds no real money and isn't a regulated financial service, so don't use it for balances players can cash out or exchange for real money.
 
 ## Install
 
@@ -32,7 +34,7 @@ use gamebanking::{ErrorKind, FundingParams, GameBank, OpenAccountParams, Transfe
 
 let gb = GameBank::builder()
     .api_key(std::env::var("GBE_API_KEY")?)
-    .base_url("https://your-engine.example.com")
+    .base_url("https://api.gamebank.dev")
     .build()?; // or GameBank::from_env() with GBE_API_KEY and GBE_BASE_URL
 
 let player = gb.players().upsert(&UpsertPlayerParams {

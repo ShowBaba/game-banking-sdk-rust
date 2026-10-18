@@ -2,13 +2,15 @@
 
 The behaviour every Game Banking Engine SDK implements. The canonical copy lives in the engine repository (`docs/sdk-contract.md`); each SDK repository carries a copy as `CONTRACT.md`. Change the engine's copy first, then update the SDKs.
 
-| SDK | Repository | Package (placeholder name) |
-| --- | --- | --- |
-| TypeScript / JavaScript | [game-banking-sdk-typescript](https://github.com/ShowBaba/game-banking-sdk-typescript) | `@gamebanking/sdk` |
-| Python | [game-banking-sdk-python](https://github.com/ShowBaba/game-banking-sdk-python) | `gamebanking` |
-| C# / .NET | [game-banking-sdk-dotnet](https://github.com/ShowBaba/game-banking-sdk-dotnet) | `GameBanking` |
-| Go | [game-banking-sdk-go](https://github.com/ShowBaba/game-banking-sdk-go) | `github.com/ShowBaba/game-banking-sdk-go` |
-| Rust | [game-banking-sdk-rust](https://github.com/ShowBaba/game-banking-sdk-rust) | `gamebanking` (crate) |
+| SDK | Repository | Package | Install |
+| --- | --- | --- | --- |
+| TypeScript / JavaScript | [game-banking-sdk-typescript](https://github.com/ShowBaba/game-banking-sdk-typescript) | [`@gamebanking/sdk`](https://www.npmjs.com/package/@gamebanking/sdk) on npm | `npm i @gamebanking/sdk` |
+| Python | [game-banking-sdk-python](https://github.com/ShowBaba/game-banking-sdk-python) | [`game-banking-sdk`](https://pypi.org/project/game-banking-sdk/) on PyPI (imported as `gamebanking`) | `pip install game-banking-sdk` |
+| C# / .NET | [game-banking-sdk-dotnet](https://github.com/ShowBaba/game-banking-sdk-dotnet) | [`GameBanking`](https://www.nuget.org/packages/GameBanking/) on NuGet | `dotnet add package GameBanking` |
+| Go | [game-banking-sdk-go](https://github.com/ShowBaba/game-banking-sdk-go) | `github.com/ShowBaba/game-banking-sdk-go` | `go get github.com/ShowBaba/game-banking-sdk-go` |
+| Rust | [game-banking-sdk-rust](https://github.com/ShowBaba/game-banking-sdk-rust) | [`gamebanking`](https://crates.io/crates/gamebanking) on crates.io | `cargo add gamebanking` |
+
+**The engine handles in-game money only.** It simulates banking for game currencies, holds no real funds and isn't a regulated financial service. SDK documentation says so.
 
 **The SDKs are for game servers.** A game API key can move money, so it must never ship in a game client or a web page. The SDKs never authenticate players: your server verifies its own player, then calls the engine for them.
 
@@ -24,7 +26,7 @@ The behaviour every Game Banking Engine SDK implements. The canonical copy lives
 This is the contract. Each SDK's tests check it.
 
 ### Configuration
-`apiKey` (or the `GBE_API_KEY` environment variable), `baseUrl` (or `GBE_BASE_URL`; your engine's address, e.g. `https://game-banking-engine.onrender.com`), `timeout` (30 s) and `maxRetries` (2). The environment is read from the key prefix and exposed as `environment`; it is never sent, because the engine derives it from the key.
+`apiKey` (or the `GBE_API_KEY` environment variable), `baseUrl` (or `GBE_BASE_URL`; the engine's address: `https://api.gamebank.dev` for the hosted engine), `timeout` (30 s) and `maxRetries` (2). The environment is read from the key prefix and exposed as `environment`; it is never sent, because the engine derives it from the key.
 
 ### Idempotency
 Every money-moving call (`funding.create`, `transfers.create`, `holds.place`, `holds.capture`, `holds.release`, `transactions.reverse`) sends an `Idempotency-Key`.
