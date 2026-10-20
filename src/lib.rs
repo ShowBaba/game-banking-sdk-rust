@@ -20,8 +20,7 @@
 //! # async fn run(bank_id: String) -> gamebanking::Result<()> {
 //! let gb = GameBank::builder()
 //!     .api_key(std::env::var("GBE_API_KEY").unwrap())
-//!     .base_url("https://api.gamebank.dev")
-//!     .build()?;
+//!     .build()?; // talks to https://api.gamebank.dev
 //!
 //! let player = gb
 //!     .players()
@@ -89,7 +88,8 @@ pub use management::{ApiKeys, AuditLogParams, DeveloperCredentials, GameBankMana
 pub use money::{format_minor, to_minor};
 pub use transport::{
     retry_delay, BoxFuture, ClientBuilder, Environment, FromInner, HttpRequest, HttpResponse,
-    HttpTransport, RequestOptions, ReqwestTransport, ResponseInfo, TransportError, VERSION,
+    HttpTransport, RequestOptions, ReqwestTransport, ResponseInfo, TransportError,
+    DEFAULT_BASE_URL, VERSION,
 };
 pub use types::*;
 pub use webhooks::{verify_webhook, WebhookVerificationError, WebhookVerifier};

@@ -137,7 +137,7 @@ impl<T> fmt::Debug for Pager<T> {
 /// ```no_run
 /// # async fn run() -> gamebanking::Result<()> {
 /// use gamebanking::{GameBank, TransferParams};
-/// let gb = GameBank::builder().api_key("gbe_test_sk_…").base_url("https://api.gamebank.dev").build()?;
+/// let gb = GameBank::builder().api_key("gbe_test_sk_…").build()?; // talks to https://api.gamebank.dev
 /// let sent = gb
 ///     .transfers()
 ///     .create(&TransferParams {
@@ -176,7 +176,7 @@ impl GameBank {
         ClientBuilder::new()
     }
 
-    /// A client configured from `GBE_API_KEY` and `GBE_BASE_URL`.
+    /// A client configured from `GBE_API_KEY` (and `GBE_BASE_URL`, if set).
     pub fn from_env() -> Result<GameBank> {
         Self::builder().build()
     }
@@ -184,6 +184,11 @@ impl GameBank {
     /// Sandbox or production, read from the API key's prefix.
     pub fn environment(&self) -> Option<Environment> {
         self.t.environment
+    }
+
+    /// The engine this client talks to.
+    pub fn base_url(&self) -> &str {
+        &self.t.base_url
     }
 
     pub fn players(&self) -> Players {

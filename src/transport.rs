@@ -197,12 +197,16 @@ pub struct RequestOptions {
 }
 
 pub(crate) type Hook = Arc<dyn Fn(&ResponseInfo) + Send + Sync>;
+/// The hosted engine. Override it with [`ClientBuilder::base_url`] or
+/// `GBE_BASE_URL` for a local or self-hosted engine.
+pub const DEFAULT_BASE_URL: &str = "https://api.gamebank.dev";
+
 pub(crate) type Sleeper = Arc<dyn Fn(Duration) -> BoxFuture<'static, ()> + Send + Sync>;
 
 #[doc(hidden)]
 pub struct Inner {
     api_key: String,
-    base_url: String,
+    pub(crate) base_url: String,
     timeout: Duration,
     max_retries: u32,
     transport: Arc<dyn HttpTransport>,
@@ -292,7 +296,8 @@ impl<C: FromInner> ClientBuilder<C> {
         self
     }
 
-    /// Your engine's address (default: `GBE_BASE_URL`).
+    /// The engine's address. Defaults to `GBE_BASE_URL`, then [`DEFAULT_BASE_URL`]
+    /// (the hosted engine). Set it only for a local or self-hosted engine.
     pub fn base_url(mut self, url: impl Into<String>) -> Self {
         self.base_url = Some(url.into());
         self
@@ -345,15 +350,14 @@ impl<C: FromInner> ClientBuilder<C> {
         }
         let base_url = self
             .base_url
-            .or_else(|| std::env::var("GBE_BASE_URL").ok())
-            .unwrap_or_default();
+            .filter(|u| !u.trim().is_empty())
+            .or_else(|| {
+                std::env::var("GBE_BASE_URL")
+                    .ok()
+                    .filter(|u| !u.trim().is_empty())
+            })
+            .unwrap_or_else(|| DEFAULT_BASE_URL.to_string());
         let base_url = base_url.trim().trim_end_matches('/').to_string();
-        if base_url.is_empty() {
-            return Err(Error::local(
-                "missing_base_url",
-                "pass base_url (your engine's address) or set GBE_BASE_URL",
-            ));
-        }
         let inner = Inner {
             environment: Environment::of(&api_key),
             api_key,

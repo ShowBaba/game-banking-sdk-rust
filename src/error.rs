@@ -104,7 +104,7 @@ impl Error {
     pub fn kind(&self) -> ErrorKind {
         match (self.status, self.code.as_str()) {
             (0, "connection_error" | "timeout") => ErrorKind::Connection,
-            (0, "missing_api_key" | "missing_base_url") => ErrorKind::Configuration,
+            (0, "missing_api_key") => ErrorKind::Configuration,
             (0, _) => ErrorKind::InvalidRequest,
             (_, "invalid_response") => ErrorKind::InvalidResponse,
             (401, _) => ErrorKind::Authentication,

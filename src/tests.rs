@@ -142,18 +142,26 @@ fn configuration_from_env() {
         (e.kind(), e.code.as_str()),
         (ErrorKind::Configuration, "missing_api_key")
     );
-    let e = GameBank::builder()
+    let gb = GameBank::builder()
         .api_key("gbe_test_sk_x")
         .build()
-        .unwrap_err();
-    assert_eq!(e.code, "missing_base_url");
+        .unwrap();
+    assert_eq!(gb.base_url(), "https://api.gamebank.dev");
+    assert_eq!(gb.base_url(), crate::DEFAULT_BASE_URL);
     std::env::set_var("GBE_API_KEY", "gbe_live_sk_env");
     std::env::set_var("GBE_BASE_URL", "http://env");
+    let gb = GameBank::from_env().unwrap();
+    assert_eq!(gb.environment(), Some(Environment::Production));
+    assert_eq!(gb.base_url(), "http://env");
+    let explicit = GameBank::builder()
+        .base_url("http://explicit/")
+        .build()
+        .unwrap();
+    assert_eq!(explicit.base_url(), "http://explicit");
     assert_eq!(
-        GameBank::from_env().unwrap().environment(),
-        Some(Environment::Production)
+        GameBankManagement::from_env().unwrap().base_url(),
+        "http://env"
     );
-    assert!(GameBankManagement::from_env().is_ok());
     std::env::remove_var("GBE_API_KEY");
     std::env::remove_var("GBE_BASE_URL");
     assert_eq!(Environment::of("gbe_dev_x"), None);

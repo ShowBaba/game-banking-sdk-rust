@@ -46,9 +46,14 @@ impl GameBankManagement {
         ClientBuilder::new()
     }
 
-    /// A management client configured from `GBE_API_KEY` and `GBE_BASE_URL`.
+    /// A management client configured from `GBE_API_KEY` (and `GBE_BASE_URL`, if set).
     pub fn from_env() -> Result<GameBankManagement> {
         Self::builder().build()
+    }
+
+    /// The engine this client talks to.
+    pub fn base_url(&self) -> &str {
+        &self.t.base_url
     }
 
     pub fn games(&self) -> Games {

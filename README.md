@@ -34,8 +34,7 @@ use gamebanking::{ErrorKind, FundingParams, GameBank, OpenAccountParams, Transfe
 
 let gb = GameBank::builder()
     .api_key(std::env::var("GBE_API_KEY")?)
-    .base_url("https://api.gamebank.dev")
-    .build()?; // or GameBank::from_env() with GBE_API_KEY and GBE_BASE_URL
+    .build()?; // talks to https://api.gamebank.dev; or GameBank::from_env() with GBE_API_KEY
 
 let player = gb.players().upsert(&UpsertPlayerParams {
     external_player_id: "user-42".into(),
@@ -213,7 +212,7 @@ let ep = gb.webhooks().endpoints().create(&CreateWebhookEndpointParams {
 ```rust
 use gamebanking::{CreateBankParams, GameBankManagement, IssueApiKeyParams};
 
-let mgmt = GameBankManagement::builder().api_key(std::env::var("GBE_DEV_CREDENTIAL")?).base_url(&base_url).build()?;
+let mgmt = GameBankManagement::builder().api_key(std::env::var("GBE_DEV_CREDENTIAL")?).build()?;
 let game = mgmt.games().create("Lagos Hustle", None).await?;
 let key = mgmt.api_keys().issue(&game.id, &IssueApiKeyParams { environment: "sandbox".into(), ..Default::default() }).await?;
 println!("{}", key.secret.unwrap()); // shown once

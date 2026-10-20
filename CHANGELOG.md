@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **No base URL needed.** Clients talk to the hosted engine at `https://api.gamebank.dev` by default (`DEFAULT_BASE_URL`). `.base_url(...)` and `GBE_BASE_URL` still override it, for a local or self-hosted engine. The `missing_base_url` error is gone. `GameBank` and `GameBankManagement` have `base_url()`.
+
 ## 0.5.0
 
 First release of the Rust SDK, at feature parity with the other SDKs' 0.5.0:

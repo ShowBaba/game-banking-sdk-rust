@@ -26,7 +26,7 @@ The behaviour every Game Banking Engine SDK implements. The canonical copy lives
 This is the contract. Each SDK's tests check it.
 
 ### Configuration
-`apiKey` (or the `GBE_API_KEY` environment variable), `baseUrl` (or `GBE_BASE_URL`; the engine's address: `https://api.gamebank.dev` for the hosted engine), `timeout` (30 s) and `maxRetries` (2). The environment is read from the key prefix and exposed as `environment`; it is never sent, because the engine derives it from the key.
+`apiKey` (or the `GBE_API_KEY` environment variable), `baseUrl` (optional: the explicit option, else `GBE_BASE_URL`, else the hosted engine `https://api.gamebank.dev`, exported as a `DEFAULT_BASE_URL` constant; set it only for a local or self-hosted engine), `timeout` (30 s) and `maxRetries` (2). The environment is read from the key prefix and exposed as `environment`; it is never sent, because the engine derives it from the key.
 
 ### Idempotency
 Every money-moving call (`funding.create`, `transfers.create`, `holds.place`, `holds.capture`, `holds.release`, `transactions.reverse`) sends an `Idempotency-Key`.
